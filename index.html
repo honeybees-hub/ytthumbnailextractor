@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inbondz</title>
+    <!-- Importing Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CSS Variables & Reset --- */
+        :root {
+            --primary-color: #ff0000; /* YouTube Red */
+            --primary-hover: #cc0000;
+            --bg-color: #f9f9f9;
+            --card-bg: #ffffff;
+            --text-dark: #333333;
+            --text-light: #666666;
+            --border-radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+
+        /* --- Main Layout --- */
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        /* --- Input Section --- */
+        .input-section {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            margin-bottom: 2rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Responsive input layout: Row on desktop, Column on mobile */
+        @media (min-width: 600px) {
+            .input-group {
+                flex-direction: row;
+            }
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .error-msg {
+            color: var(--primary-color);
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: none; /* Hidden by default */
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* --- Results Section (Thumbnails) --- */
+        #results-area {
+            display: none; /* Hidden until content is generated */
+            animation: slideUp 0.5s ease;
+        }
+
+        .thumbnails-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        /* 2 Columns on Tablet */
+        @media (min-width: 640px) {
+            .thumbnails-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* 3 Columns on Desktop */
+        @media (min-width: 900px) {
+            .thumbnails-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* --- Card Styling --- */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            padding: 1rem;
+            background: #f1f1f1;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .img-wrapper {
+            position: relative;
+            width: 100%;
+            /* 16:9 Aspect Ratio hack */
+            padding-bottom: 56.25%; 
+            background-color: #000;
+        }
+
+        .img-wrapper img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .url-box {
+            background: #f4f4f4;
+            border: 1px solid #ddd;
+            padding: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            width: 100%;
+            border-radius: 4px;
+            outline: none;
+            cursor: text;
+        }
+
+        .btn-download {
+            display: inline-block;
+            text-align: center;
+            background-color: var(--text-dark);
+            color: white;
+            text-decoration: none;
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .btn-download:hover {
+            background-color: black;
+        }
+
+        /* --- Footer --- */
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            max-width: 600px;
+        }
+
+        /* --- Animations --- */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>YouTube Thumbnail Downloader</h1>
+            <p class="subtitle">Enter a video URL to get high-quality thumbnails instantly.</p>
+        </header>
+
+        <!-- Input Section -->
+        <section class="input-section">
+            <div class="input-group">
+                <input type="text" id="urlInput" placeholder="Paste YouTube URL here (e.g., https://youtu.be/...)">
+                <button class="btn-primary" onclick="generateThumbnails()">Get Thumbnail</button>
+            </div>
+            <div id="errorMsg" class="error-msg">Please enter a valid YouTube URL.</div>
+        </section>
+
+        <!-- Results Section -->
+        <section id="results-area">
+            <div class="thumbnails-grid" id="thumbnailsContainer">
+                <!-- Cards will be injected here via JavaScript -->
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <p><strong>Note:</strong> Please respect the content creator's copyright. Only use thumbnails that you have permission to use or for personal reference.</p>
+        </footer>
+    </div>
+
+    <script>
+        /**
+         * Main function triggered by the button click.
+         * Validates input, extracts ID, and renders the UI.
+         */
+        function generateThumbnails() {
+            const urlInput = document.getElementById('urlInput');
+            const errorMsg = document.getElementById('errorMsg');
+            const resultsArea = document.getElementById('results-area');
+            const container = document.getElementById('thumbnailsContainer');
+            
+            const url = urlInput.value.trim();
+
+            // 1. Clear previous state
+            errorMsg.style.display = 'none';
+            container.innerHTML = '';
+            resultsArea.style.display = 'none';
+
+            // 2. Validation: Empty input
+            if (!url) {
+                showError("Please enter a YouTube URL.");
+                return;
+            }
+
+            // 3. Extract Video ID
+            const videoId = extractVideoId(url);
+
+            if (!videoId) {
+                showError("Could not find a valid video ID. Please check the URL.");
+                return;
+            }
+
+            // 4. Generate Data for different qualities
+            // YouTube thumbnail structure:
+            // maxresdefault.jpg (1280x720) - Not always available for 480p videos
+            // sddefault.jpg (640x480)
+            // hqdefault.jpg (480x360)
+            // mqdefault.jpg (320x180)
+            
+            const qualities = [
+                {
+                    label: "Max Resolution (HD)",
+                    url: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+                    resolution: "1280x720"
+                },
+                {
+                    label: "Standard Quality (SD)",
+                    url: `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+                    resolution: "640x480"
+                },
+                {
+                    label: "High Quality",
+                    url: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+                    resolution: "480x360"
+                },
+                {
+                    label: "Medium Quality",
+                    url: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+                    resolution: "320x180"
+                }
+            ];
+
+            // 5. Render Cards
+            qualities.forEach(item => {
+                const cardHTML = createCardHTML(item);
+                container.innerHTML += cardHTML;
+            });
+
+            // 6. Show and Scroll
+            resultsArea.style.display = 'block';
+            
+            // Smooth scroll to the results
+            setTimeout(() => {
+                resultsArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+
+        /**
+         * Extracts the YouTube Video ID from various URL formats.
+         * Supports:
+         * - youtube.com/watch?v=ID
+         * - youtu.be/ID
+         * - youtube.com/embed/ID
+         * - youtube.com/shorts/ID
+         */
+        function extractVideoId(url) {
+            const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[7].length == 11) ? match[7] : false;
+        }
+
+        /**
+         * Helper to show error messages
+         */
+        function showError(message) {
+            const errorMsg = document.getElementById('errorMsg');
+            errorMsg.innerText = message;
+            errorMsg.style.display = 'block';
+        }
+
+        /**
+         * Generates the HTML string for a single thumbnail card.
+         */
+        function createCardHTML(item) {
+            return `
+                <div class="card">
+                    <div class="card-header">
+                        ${item.label} (${item.resolution})
+                    </div>
+                    <div class="img-wrapper">
+                        <img src="${item.url}" alt="${item.label}">
+                    </div>
+                    <div class="card-body">
+                        <!-- Read-only input for easy copying -->
+                        <input type="text" class="url-box" value="${item.url}" readonly onclick="this.select()">
+                        
+                        <!-- Download Button -->
+                        <!-- Note: Using target="_blank" because direct download via 'download' attribute 
+                             is often blocked by CORS for external domains without a backend proxy. -->
+                        <a href="${item.url}" target="_blank" class="btn-download" rel="noopener noreferrer">
+                            Download Image
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Add Enter key listener for better UX
+        document.getElementById('urlInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                generateThumbnails();
+            }
+        });
+
+    </script>
+</body>
+</html>
